@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>Atividades</title>
+<!-- <link rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" /> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css" />
+<link rel="stylesheet" th:href="@{/stylesheets/style.css}" />
+
+
+</head>
+<body>
+	
+	
+	<nav class="light-blue lighten-1 ng-scope" role="navigation">
+    	<div class="nav-wrapper container">
+    		<a id="logo-container" class="brand-logo">O Que Fazer</a>
+    	</div>
+	</nav>
+
+	<div class="section no-pad-bot ng-scope">
+	    <div class="container">
+	        <div class="row center">
+	            <h5 class="header col s12 light">Controle a sua lista de tarefas.</h5>
+	        </div>
+	
+	        <form name="form-atividade" class="col s12 ng-pristine ng-invalid ng-invalid-required" th:action="@{/atividades}" method="POST" th:object="${atividade}">
+	
+	            <div class="row formulario-de-cadastro ng-scope" ng-if="!vm.form_edicao">
+	
+	                    <div class="row">
+	                        <div class="input-field col s6">
+	                            <input 
+	                            	ng-model="vm.atividade.titulo" 
+	                            	id="titulo" 
+	                            	type="text" 
+	                            	class="validate ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" 
+	                            	required="true"
+	                            	th:field="*{titulo}">
+	                            <label for="titulo">Título</label>
+	                        </div>
+	                    </div>
+	                    <div class="row">
+	                        <div class="input-field col s12">
+	                            <textarea 
+	                            	ng-model="vm.atividade.descricao" 
+	                            	id="descricao"
+	                            	class="materialize-textarea ng-pristine ng-untouched ng-empty ng-invalid ng-invalid-required" 
+	                            	required="true"
+	                            	th:field="*{descricao}">
+	                            </textarea>
+	                            <label for="descricao">Descrição</label>
+	                        </div>
+	                    </div>
+	                    <div class="row">
+	                        <div class="input-field col s12">
+	                            <input ng-model="vm.atividade.status" type="checkbox" id="status" class="ng-pristine ng-untouched ng-valid ng-empty">
+	                            <label for="status">Atividade Finalizada ?</label>
+	                        </div>
+	                    </div>
+	
+	            </div>
+	
+	            <br>
+	
+	            <div class="row ng-scope" ng-if="!vm.form_edicao">
+	                <button ng-disabled="form-atividade.$invalid" type="submit" class="btn-large waves-effect waves-light green">Cadastrar Tarefa</button>
+	            </div>
+	            
+	        </form>
+	
+	        <form class="col s12 ng-pristine ng-valid" ng-submit="vm.editar()">
+			
+	        </form>
+	
+	    </div>
+	</div>	
+	
+	<div class="container">
+
+	    <div class="section">
+	
+	        <div class="row center">
+	            <h5 class="header col s12 light">PENDÊNCIAS</h5>
+	        </div>
+	
+	        <div class="row">
+	        
+	        	<div class="col s12 m4" th:each="atividade : ${atividades}">
+	                <div class="card blue-grey darken-1">
+	                    <div class="card-content white-text">
+	                        <span class="card-title" th:text="${atividade.titulo}" ng-bind="'Título: ' + atividade.titulo"></span>
+	                        <p th:text="${atividade.descricao}" ng-bind="'Descrição: ' + atividade.descricao"></p>
+	                        <!-- 
+	                        <p ng-bind="'Criação: ' + atividade.dt_criacao"></p>
+	                        <p ng-bind="atividade.status != 'true' ? 'Situação: Pendente' : 'Situação: Finalizado'"></p>
+	                        -->
+	                    </div>
+	                    <div class="card-action center">
+	                        <button class="btn" ng-click="vm.visualizar(atividade)">Editar</button>
+	                        <button ng-disabled="!vm.form_cadastro" class="btn red" ng-click="vm.excluir(atividade)">x</button>
+	                    </div>
+	                    <div class="card-action center">
+	                        <button ng-disabled="!vm.form_cadastro" class="btn green" ng-click="vm.finalizar(atividade)">Finalizar</button>
+	                    </div>
+	                </div>
+	            </div>
+	
+	        </div>
+	
+	        <div class="row nao-existem-atividades" ng-if="vm.listagem_pendentes.length < 1">
+	
+	            <div class="col s12 m12">
+	                <div class="card blue-grey darken-1">
+	                    <div class="card-content white-text">
+	                        <span class="card-title">INFORMAÇÃO</span>
+	                        <p>Não existem atividades pendentes</p>
+	                    </div>
+	                </div>
+	            </div>
+	
+	        </div>
+	
+	    </div>
+	
+	    <!-- 
+	    
+	    <div class="section">
+	
+	        <div class="row center">
+	            <h5 class="header col s12 light">FINALIZADOS</h5>
+	        </div>
+	
+	        <div class="row">
+	
+	            <div class="col s12 m4" ng-repeat="atividade in vm.listagem_finalizados">
+	                <div class="card blue darken-1">
+	                    <div class="card-content">
+	                        <span class="card-title" ng-bind="'Título: ' + atividade.titulo"></span>
+	                        <p ng-bind="'Descrição: ' + atividade.descricao"></p>
+	                        <p ng-bind="'Criação: ' + atividade.dt_criacao"></p>
+	                        <p ng-bind="atividade.status != 'true' ? 'Situação: Pendente' : 'Situação: Finalizado'"></p>
+	                    </div>
+	                    <div class="card-action center">
+	                        <button disabled class="btn" ng-click="vm.visualizar(atividade)">Editar</button>
+	                        <button ng-disabled="!vm.form_cadastro" class="btn red" ng-click="vm.excluir(atividade)">x</button>
+	                    </div>
+	                    <div class="card-action center">
+	                        <button ng-disabled="!vm.form_cadastro" class="btn green" ng-click="vm.pendenciar(atividade)">Tornar Pendente</button>
+	                    </div>
+	                </div>
+	            </div>
+	
+	        </div>
+	
+	        <div class="row nao-existem-atividades" ng-if="vm.listagem_finalizados.length < 1">
+	
+	            <div class="col s12 m12">
+	                <div class="card blue-grey darken-1">
+	                    <div class="card-content white-text">
+	                        <span class="card-title">INFORMAÇÃO</span>
+	                        <p>Não existem atividades finalizadas</p>
+	                    </div>
+	                </div>
+	            </div>
+	
+	        </div>
+	
+	    </div>
+	
+	    <br><br>
+	    
+	    -->
+	
+	    <div class="section">
+	
+	    </div>
+	</div>
+	
+	<footer class="page-footer orange">
+	    <div class="container">
+	        <div class="row">
+	            <div class="col l12 s12">
+	                <h5 class="white-text">O Que Fazer</h5>
+	                <p class="grey-text text-lighten-4">Controle a sua lista de tarefas.</p>
+	            </div>
+	        </div>
+	    </div>
+	    <div class="footer-copyright">
+	        <div class="container">
+	            Made by <a class="orange-text text-lighten-3" href="http://materializecss.com">Materialize</a>
+	        </div>
+	    </div>
+	</footer>
+	
+	<!-- 
+	<div class="container">
+		
+		<div class="row">
+    		<div class="col-md-4" th:each="atividade : ${atividades}">
+				<h2 th:text="${atividade.titulo}">Título da atividade</h2>
+				<h4 th:text="${atividade.descricao}">Descrição atividade</h4>				
+			</div>
+		</div>
+		
+		<div class="modal fade" id="novoAtividadeModal" tabindex="-1" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">
+							<span>&times;</span>
+						</button>
+						<h4 class="modal-title">Nova atividade</h4>
+					</div>
+					<form th:action="@{/atividades}" method="POST" th:object="${atividade}">
+						<div class="modal-body">
+								<div class="form-group">
+	    							<label for="titulo">Título</label>
+	    							<input type="text" class="form-control" id="titulo" placeholder="Título" th:field="*{titulo}">
+	  							</div>
+								<div class="form-group">
+								    <label for="descricao">Descrição</label>
+								    <input type="text" class="form-control" id="descricao" placeholder="Descrição" th:field="*{descricao}">
+								</div>								
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+							<button type="submit" class="btn btn-primary">Adicionar</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	-->
+	
+	
+	<script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<!-- <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script> -->
+	<!-- Compiled and minified JavaScript -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+	
+
+</body>
+</html>

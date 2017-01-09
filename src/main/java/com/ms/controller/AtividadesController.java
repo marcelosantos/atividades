@@ -13,25 +13,41 @@ import com.ms.repository.Atividades;
 @Controller
 @RequestMapping("/atividades")
 public class AtividadesController {
-	
+
 	@Autowired
 	private Atividades atividades;
-	
+
 	@GetMapping
 	public ModelAndView novo(){
-		
+
 		ModelAndView mv = new ModelAndView("CadastroDeAtividades","atividade", new Atividade());
 		mv.addObject("atividades", atividades.findAll());
 		return mv;
-		
+
 	}
-	
+
 	@PostMapping
 	public String salvar(Atividade atividade){
-		
+
 		atividades.save(atividade);
 		return "redirect:/atividades";
-		
+
 	}
-	
+
+    @PostMapping
+	public String remover(Atividade atividade){
+
+		atividades.save(atividade);
+		return "redirect:/atividades";
+
+	}
+
+    @PostMapping
+	public String editar(Atividade atividade){
+
+		atividades.save(atividade);
+		return "redirect:/atividades";
+
+	}
+
 }
